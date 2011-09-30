@@ -181,8 +181,20 @@
                 root = doc.documentElement ? doc.documentElement : doc.body,
                 textarea = root.getElementsByTagName("textarea")[0],
                 type = textarea ? textarea.getAttribute("data-type") : null;
+                text = null;
+              if (type) {
+                text = textarea.value;
+              } else if (root) {
+                if (root.innerHTML) {
+                  text = root.innerHTML;
+                } else if (root.xml) {
+                  text = root.xml;
+                } else if (window.XMLSerializer) {
+                  text = new XMLSerializer().serializeToString(root);
+                }
+              }
               completeCallback(200, "OK", {
-                text: type ? textarea.value : root ? root.innerHTML : null
+                text: text
               }, "Content-Type: " + (type || "text/html"));
               setTimeout(cleanUp, 50);
             });
